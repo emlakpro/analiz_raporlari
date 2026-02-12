@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emlak Analiz Raporları Arşivi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #10b981;
+            --hover: #334155;
+            --border: #334155;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; color: var(--primary); }
+        p { color: var(--text-muted); margin-top: 10px; }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .search-box:focus { border-color: var(--primary); }
+
+        #file-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-item {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .file-icon { color: var(--primary); font-size: 1.2rem; }
+        .file-name { 
+            font-weight: 500; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-view { background: #3b82f6; color: white; }
+        .btn-view:hover { background: #2563eb; }
+
+        .btn-copy { background: var(--hover); color: var(--text-muted); }
+        .btn-copy:hover { background: var(--border); color: white; }
+
+        .loading { text-align: center; color: var(--text-muted); margin-top: 50px; }
+        .error { color: #ef4444; text-align: center; background: rgba(239,68,68,0.1); padding: 15px; border-radius: 8px; }
+
+        @media (max-width: 600px) {
+            .file-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .actions { width: 100%; justify-content: flex-end; }
+            .file-name { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><i class="fa-solid fa-folder-open"></i> Emlak Analiz Raporları</h1>
+        <p>Emlakçılar için hazırlanan rapor listesi.</p>
+    </header>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="Rapor ara... (Örn: Meryildiz)">
+
+    <div id="content-area">
+        <div class="loading">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i><br><br>
+            Dosyalar GitHub'dan çekiliyor...
+        </div>
+    </div>
+</div>
+
+<script>
+    // GitHub Pages URL yapısından kullanıcı ve repo adını otomatik çözer
+    // Örn: https://kullanici.github.io/repo/ -> user:kullanici, repo:repo
+    
+    function getRepoDetails() {
+        const host = window.location.host; // kullanici.github.io
+        const path = window.location.pathname.split('/').filter(p => p); // ['repo', 'klasor']
+        
+        // Eğer localhost ise test verileri giriniz
+        if (host.includes('localhost') || host.includes('127.0.0.1')) {
+            // BURAYI KENDİ TESTLERİN İÇİN DEĞİŞTİREBİLİRSİN
+            return { user: 'KULLANICI_ADIN', repo: 'REPO_ADIN', path: '' }; 
+        }
+
+        const user = host.split('.')[0];
+        const repo = path[0];
+        // Eğer index dosyası alt klasördeyse, o klasörün yolunu bulur
+        const folderPath = path.slice(1).join('/'); 
+
+        return { user, repo, path: folderPath };
+    }
+
+    async function fetchFiles() {
+        const { user, repo, path } = getRepoDetails();
+        const contentArea = document.getElementById('content-area');
+        
+        // GitHub API URL
+        const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) throw new Error(`GitHub API Hatası: ${response.status}`);
+            
+            const data = await response.json();
+            
+            // Sadece HTML dosyalarını filtrele ve index.html'i hariç tut
+            const files = data.filter(item => 
+                item.name.endsWith('.html') && 
+                item.name.toLowerCase() !== 'index.html' &&
+                item.name.toLowerCase() !== '404.html'
+            );
+
+            renderFiles(files, user, repo, path);
+
+        } catch (error) {
+            contentArea.innerHTML = `
+                <div class="error">
+                    <i class="fa-solid fa-triangle-exclamation"></i><br>
+                    Dosyalar yüklenemedi.<br>
+                    <small>${error.message}</small><br>
+                    <small>Lütfen GitHub Pages ayarlarının aktif olduğundan emin olun.</small>
+                </div>`;
+        }
+    }
+
+    function renderFiles(files, user, repo, currentPath) {
+        const contentArea = document.getElementById('content-area');
+        
+        if (files.length === 0) {
+            contentArea.innerHTML = '<div class="loading">Bu klasörde HTML rapor bulunamadı.</div>';
+            return;
+        }
+
+        // Listeyi oluştur
+        let html = '<ul id="file-list">';
+        
+        // GitHub Pages Base URL
+        const basePath = `https://${user}.github.io/${repo}/${currentPath ? currentPath + '/' : ''}`;
+
+        files.forEach(file => {
+            const fileUrl = basePath + file.name;
+            
+            html += `
+            <li class="file-item" data-name="${file.name.toLowerCase()}">
+                <div class="file-info">
+                    <i class="fa-regular fa-file-code file-icon"></i>
+                    <span class="file-name">${file.name}</span>
+                </div>
+                <div class="actions">
+                    <a href="${fileUrl}" target="_blank" class="btn btn-view">
+                        <i class="fa-solid fa-eye"></i> Aç
+                    </a>
+                    <button onclick="copyLink('${fileUrl}')" class="btn btn-copy">
+                        <i class="fa-solid fa-link"></i> Kopyala
+                    </button>
+                </div>
+            </li>`;
+        });
+
+        html += '</ul>';
+        contentArea.innerHTML = html;
+    }
+
+    // Link Kopyalama Fonksiyonu
+    window.copyLink = function(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Link kopyalandı! Emlakçıya gönderebilirsin.");
+        }).catch(err => {
+            console.error('Kopyalama hatası:', err);
+        });
+    }
+
+    // Arama Fonksiyonu
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        const term = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.file-item');
+        
+        items.forEach(item => {
+            const name = item.getAttribute('data-name');
+            if (name.includes(term)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Başlat
+    fetchFiles();
+</script>
+
+</body>
+</html>
