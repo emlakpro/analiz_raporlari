@@ -2951,6 +2951,235 @@ header, .theme-btn, .logo { position: relative; z-index: 50 !important; }
     }
 </style>
 
+
+<style>
+    /* --- PATCH V45: CLOSE BUTTON & TEXT VISIBILITY FINAL FIX --- */
+
+    @media (max-width: 900px) {
+
+        /* 1. KAPATMA BUTONU (KESİN SAĞ ÜST) */
+        .modal-close {
+            position: fixed !important;
+            top: 15px !important;
+            right: 15px !important;
+            left: unset !important;  /* Sol tarafı tamamen UNUT */
+
+            z-index: 2147483647 !important; /* Maksimum Z-Index */
+            background: rgba(220, 38, 38, 0.95) !important;
+            color: white !important;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+        }
+
+        /* 2. AÇIKLAMA METNİ GÖRÜNÜRLÜĞÜ */
+        .modal-desc-col-right {
+            display: block !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 50vh !important;
+
+            /* Metin Rengi ve Arka Plan */
+            background-color: var(--bg-card) !important;
+            color: var(--text-muted) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+
+            padding: 30px 20px 150px 20px !important;
+            overflow: visible !important;
+        }
+
+        /* Light Modda Metin Rengi */
+        [data-theme="light"] .modal-desc-col-right {
+            background-color: #ffffff !important;
+            color: #334155 !important;
+        }
+
+        /* Metin Kutusu */
+        .modal-desc {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            color: inherit !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            white-space: pre-wrap !important;
+        }
+
+        /* 3. GEREKSİZLERİ GİZLE */
+        .zen-copy-btn, .action-row, .header-copy-btn {
+            display: none !important;
+        }
+    }
+</style>
+
+
+<style>
+    /* --- PATCH V46: ALIGNMENT & POSITION FIXES --- */
+
+    @media (max-width: 900px) {
+
+        /* 1. YAPAY ZEKA PUANI (ORTALAMA) */
+        .ai-score-badge {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 15px auto !important; /* Üst-Alt 15px, Sağ-Sol AUTO (Ortalar) */
+            width: fit-content !important;
+            max-width: 90% !important;
+            text-align: center !important;
+        }
+
+        /* 2. KAPATMA BUTONU (KESİN SAĞ ÜST) */
+        .modal-close {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;     /* Sağdan 20px */
+            left: auto !important;      /* Sol hizalamayı İPTAL ET */
+            bottom: auto !important;
+
+            z-index: 2147483647 !important; /* En üst katman */
+            background: rgba(220, 38, 38, 0.95) !important; /* Kırmızı */
+            color: white !important;
+
+            width: 45px !important;
+            height: 45px !important;
+            border-radius: 50% !important;
+
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
+            transform: none !important; /* Herhangi bir kaydırmayı sıfırla */
+        }
+
+        /* İkon hizalaması */
+        .modal-close i {
+            margin: 0 !important;
+            font-size: 20px !important;
+            line-height: 1 !important;
+        }
+
+        /* 3. İLAN AÇIKLAMASI (FOTO ALTI & GÖRÜNÜR) */
+        .modal-content {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .modal-desc-col-right {
+            display: block !important;
+            width: 100% !important;
+            order: 2 !important; /* Resimden sonra gelmesini garantiye al */
+
+            background-color: var(--bg-card) !important;
+            color: var(--text-muted) !important;
+
+            padding: 30px 20px 100px 20px !important;
+            height: auto !important;
+            min-height: 50vh !important;
+            overflow: visible !important;
+        }
+
+        /* Light Modda Açıklama Rengi */
+        [data-theme="light"] .modal-desc-col-right {
+            background-color: #ffffff !important;
+            color: #334155 !important;
+        }
+
+        /* 4. GEREKSİZLERİ GİZLE */
+        .zen-copy-btn, .action-row {
+            display: none !important;
+        }
+    }
+</style>
+
+
+<style>
+    /* --- PATCH V47: DESKTOP FIX, BG FIX & CLOSE BTN --- */
+
+    /* 1. TÜM EKRANLAR İÇİN ORTAK DÜZELTMELER */
+
+    /* Kopyalama butonlarını HER YERDE gizle (Masaüstü + Mobil) */
+    .zen-copy-btn, .action-row, .header-copy-btn {
+        display: none !important;
+    }
+
+    /* Kapatma Butonu (Masaüstü + Mobil Ortak Ayar) */
+    .modal-close {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        left: auto !important;
+        left: unset !important; /* Kritik: Solu iptal et */
+
+        z-index: 2147483647 !important;
+        background: rgba(220, 38, 38, 0.95) !important;
+        color: white !important;
+        width: 45px !important;
+        height: 45px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    }
+
+    /* 2. MASAÜSTÜ (PC) İÇİN DÜZELTMELER (min-width: 901px) */
+    @media (min-width: 901px) {
+        .modal-desc-col-right {
+            overflow-y: auto !important; /* İç scroll geri gelsin */
+            max-height: 85vh !important; /* Taşmasın */
+            padding-bottom: 50px !important;
+        }
+
+        /* Masaüstünde açıklama arka planı */
+        .modal-desc-col-right {
+            background-color: var(--bg-card) !important;
+        }
+        [data-theme="light"] .modal-desc-col-right {
+            background-color: #ffffff !important;
+        }
+    }
+
+    /* 3. MOBİL (CEP) İÇİN DÜZELTMELER (max-width: 900px) */
+    @media (max-width: 900px) {
+
+        /* Arka Plan Kesilme Sorunu (Keskin Çizgi) */
+        .modal-content, 
+        .modal-body-split, 
+        .modal-desc-col-right {
+            background-color: var(--bg-card) !important;
+            height: auto !important;
+            min-height: 100vh !important;
+        }
+
+        /* Light Modda Beyaz Arka Plan Garantisi */
+        [data-theme="light"] .modal-content,
+        [data-theme="light"] .modal-body-split,
+        [data-theme="light"] .modal-desc-col-right {
+            background-color: #ffffff !important;
+        }
+
+        /* Açıklama Alanı */
+        .modal-desc-col-right {
+            display: block !important;
+            width: 100% !important;
+            padding: 30px 20px 150px 20px !important; /* Alt boşluk */
+            overflow: visible !important; /* Scroll yok, sayfa uzasın */
+        }
+
+        /* Kapat butonu mobilde de sağ üstte kalsın */
+        .modal-close {
+            top: 15px !important;
+            right: 15px !important;
+        }
+    }
+</style>
+
 </head>
 <body>
 
@@ -3658,6 +3887,94 @@ Randevu ve detaylı sunum için Royal Gayrimenkul profesyonel danışmanlarını
         }
     };
 </script>
+
+
+<style>
+    /* 1. KOPYALA BUTONLARINI HER YERDE YOK ET (Masaüstü + Mobil) */
+    .zen-copy-btn, 
+    .action-row, 
+    .header-copy-btn,
+    button[onclick^="copy"],
+    .copy-icon {
+        display: none !important;
+    }
+
+    /* =========================================
+       MOBİL DÜZELTMELERİ (max-width: 900px)
+       ========================================= */
+    @media (max-width: 900px) {
+
+        /* KAPATMA BUTONU: Solu unut, Sağa yapış */
+        html body .modal-close {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            left: auto !important;
+            left: unset !important; /* Kritik komut */
+
+            z-index: 2147483647 !important; /* En üst katman */
+            background: rgba(220, 38, 38, 0.98) !important;
+            color: #fff !important;
+            width: 45px !important;
+            height: 45px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: none !important;
+        }
+
+        /* ARKA PLAN VE YÜKSEKLİK (Siyah Çizgi Sorunu) */
+        html body .modal,
+        html body .modal-content,
+        html body .modal-body-split,
+        html body .modal-desc-col-right {
+            background-color: var(--bg-card) !important;
+            height: auto !important;
+            min-height: 100vh !important; /* Ekran boyunu doldur */
+        }
+
+        /* Light Modda Beyaz Garanti */
+        html[data-theme="light"] body .modal,
+        html[data-theme="light"] body .modal-content,
+        html[data-theme="light"] body .modal-body-split,
+        html[data-theme="light"] body .modal-desc-col-right {
+            background-color: #ffffff !important;
+        }
+
+        /* AÇIKLAMA METNİ */
+        html body .modal-desc-col-right {
+            display: block !important;
+            width: 100% !important;
+            padding: 30px 20px 150px 20px !important; /* Alt boşluk */
+            overflow: visible !important;
+        }
+    }
+
+    /* =========================================
+       MASAÜSTÜ DÜZELTMELERİ (min-width: 901px)
+       ========================================= */
+    @media (min-width: 901px) {
+        /* Açıklama alanına scroll çubuğu ekle */
+        html body .modal-desc-col-right {
+            overflow-y: auto !important;
+            max-height: 80vh !important; /* Ekranın %80'i kadar uza */
+            padding-right: 15px !important; /* Scroll bar için boşluk */
+            display: block !important;
+        }
+
+        /* Scroll bar tasarımı (Opsiyonel, şık durması için) */
+        html body .modal-desc-col-right::-webkit-scrollbar {
+            width: 8px;
+        }
+        html body .modal-desc-col-right::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 4px;
+        }
+    }
+</style>
 
 </body>
 </html>
